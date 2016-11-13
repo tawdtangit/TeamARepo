@@ -10,7 +10,7 @@
 #include <map>
 #include <vector>
 #include <list>
-#include<atlstr.h>
+#include <atlstr.h>
 #include <cstdio>
 #include <iostream>
 #include <memory>
