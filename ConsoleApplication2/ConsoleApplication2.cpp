@@ -64,10 +64,25 @@ HRESULT LogonIdentifiedUser()
 
 	if (SUCCEEDED(hr))
 	{
-		// Switch to the target after receiving a good identity.
+	    // Switch to the target after receiving a good identity.
+	    hr = WinBioLogonIdentifiedUser(sessionHandle);
+
+		switch (hr)
+		{
+			case S_FALSE:
+				printf("\n Target is the logged on user. No action taken.\n");
+				break;
+			case S_OK:
+				printf("\n Fast user switch initiated.\n");
+				break;
+			default:
+				wprintf_s(L"\n WinBioLogonIdentifiedUser failed. hr = 0x%x\n", hr);
+				break;
+		}
+
 		hr = WinBioEnumEnrollments( 
             sessionHandle,              // Session handle
-            unitId,                     // Biometric unit ID
+            UnitId,                     // Biometric unit ID
             &Identity,                  // Template ID
             &subFactorArray,            // Subfactors
             &subFactorCount             // Count of subfactors
@@ -78,8 +93,7 @@ HRESULT LogonIdentifiedUser()
 	        goto e_Exit;
 	    }
 
-	    // Print the sub-factor(s) to the console.
-	    wprintf_s(L"\n Enrollments for this user on Unit ID %d:", unitId);
+	    wprintf_s(L"\n Enrollments for this user on Unit ID %d:", UnitId);
 	    for (SIZE_T index = 0; index < subFactorCount; ++index)
 	    {
 	        SubFactorComp = subFactorArray[index];
@@ -115,7 +129,7 @@ HRESULT LogonIdentifiedUser()
 		                ShellExecuteA(0,0,"chrome.exe","http://piazza.com  --incognito",0,SW_SHOWMAXIMIZED);
 		                break;
 		            case WINBIO_ANSI_381_POS_LH_LITTLE_FINGER:
-		                ShellExecuteA(0,0,"chrome.exe","http://pinterest.com  --incognito",0,SW_SHOWMAXIMIZED);7
+		                ShellExecuteA(0,0,"chrome.exe","http://pinterest.com  --incognito",0,SW_SHOWMAXIMIZED);
 		                break;
 		            default:
 		                wprintf_s(L"\n   The sub-factor is not correct\n");
@@ -124,21 +138,7 @@ HRESULT LogonIdentifiedUser()
 		    }
 	 
 	    }
-
-		hr = WinBioLogonIdentifiedUser(sessionHandle);
-
-		switch (hr)
-		{
-		case S_FALSE:
-			printf("\n Target is the logged on user. No action taken.\n");
-			break;
-		case S_OK:
-			printf("\n Fast user switch initiated.\n");
-			break;
-		default:
-			wprintf_s(L"\n WinBioLogonIdentifiedUser failed. hr = 0x%x\n", hr);
-			break;
-		}
+		
 	}
 
 e_Exit:
