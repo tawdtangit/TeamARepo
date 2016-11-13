@@ -25,17 +25,27 @@
 
 using namespace std;
 
-vector<string> BlockSetup(vector<string> curr_blocked)
+void BlockSetup()
 {
-    if (curr_blocked.size() != 0)
+	ifstream in;
+	in.open("C:/Windows/System32/drivers/etc/hosts", ios::app);
+	ofstream out;
+	out.open("C:/Windows/System32/drivers/etc/temp", ios::app);
+	string line;
+    while (getline(in, line))
     {
-        for (vector<string>::const_iterator iterator = curr_blocked.begin(); iterator != curr_blocked.end(); ++iterator)
-        {
-            // unblock everything here
-        }
-    }
+		if (line.substr(0, 9) != "127.0.0.1")
+		{
+			out << line << endl;
+		}
+	}
+	out.close();
+	in.close();
+	remove("C:/Windows/System32/drivers/etc/hosts");
+	rename("C:/Windows/System32/drivers/etc/temp", "C:/Windows/System32/drivers/etc/hosts");
 
     string input = "";
+	string www_input = "";
     vector<string> BLOCK_LIST;
     while (true)
     {
@@ -45,22 +55,44 @@ vector<string> BlockSetup(vector<string> curr_blocked)
         {
             break;
         }
-        if (strstr(input.c_str(), "http") == NULL)
+        if (strstr(input.c_str(), "http") != NULL)
         {
-            input = "https://" + input + "/";
-        }
+			if (strstr(input.c_str(), "https") != NULL)
+			{
+				input = input.substr(8, input.length());
+			}
+			else
+			{
+				input = input.substr(7, input.length());
+			}
+		}
+		if (strstr(input.c_str(), "www.") != NULL)
+		{
+			input = input.substr(4, input.length());
+		}
+		www_input = "www." + input;
         BLOCK_LIST.push_back(input);
+		BLOCK_LIST.push_back(www_input);
     }
 
     if (BLOCK_LIST.size() != 0)
     {
+		ifstream in;
+		ofstream out;
+		out.open("C:/Windows/System32/drivers/etc/hosts", ios::app);
         for (vector<string>::const_iterator iterator = BLOCK_LIST.begin(); iterator != BLOCK_LIST.end(); ++iterator)
         {
-            // block everything here
+			if (!out)
+			{
+				cout << "Run script as admin";
+			}
+			else
+			{
+				out << "\n127.0.0.1" << "\t" << *iterator;
+			}
         }
+		out.close();
     }
-
-    return BLOCK_LIST;
 }
 
 map<string, vector<string>> RunSetup()
@@ -188,8 +220,6 @@ map<string, vector<string>> RunScript(string username, map<string, vector<string
     WINBIO_REJECT_DETAIL RejectDetail;
     WINBIO_BIOMETRIC_SUBTYPE subFactor = WINBIO_SUBTYPE_NO_INFORMATION;
     BOOL    bContinue = TRUE;
-    vector<string> blocked_sites;
-
 
     // Connect to the system pool. 
     hr = WinBioOpenSession(
@@ -339,7 +369,7 @@ map<string, vector<string>> RunScript(string username, map<string, vector<string
                         }
                         break;
                     case WINBIO_ANSI_381_POS_RH_THUMB:
-                        blocked_sites = BlockSetup(blocked_sites);
+                        BlockSetup();
                         break;
                     case WINBIO_ANSI_381_POS_LH_THUMB:
                         return RunSetup();
@@ -359,6 +389,22 @@ map<string, vector<string>> RunScript(string username, map<string, vector<string
             break;
         case S_OK:
             printf("\n Fast user switch initiated.\n");
+			ifstream in;
+			in.open("C:/Windows/System32/drivers/etc/hosts", ios::app);
+			ofstream out;
+			out.open("C:/Windows/System32/drivers/etc/temp", ios::app);
+			string line;
+			while (getline(in, line))
+			{
+				if (line.substr(0, 9) != "127.0.0.1")
+				{
+					out << line << endl;
+				}
+			}
+			out.close();
+			in.close();
+			remove("C:/Windows/System32/drivers/etc/hosts");
+			rename("C:/Windows/System32/drivers/etc/temp", "C:/Windows/System32/drivers/etc/hosts");
             break;
         default:
             wprintf_s(L"\n WinBioLogonIdentifiedUser failed. hr = 0x%x\n", hr);
