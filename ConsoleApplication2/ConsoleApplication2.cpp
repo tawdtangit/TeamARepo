@@ -25,6 +25,8 @@
 
 using namespace std;
 
+string blocked_for = "";
+
 void BlockSetup()
 {
 	ifstream in;
@@ -51,7 +53,7 @@ void BlockSetup()
     {
         cout << "Sites to block: ? (q to pass)" << endl;
         cin >> input;
-        if (input == "s")
+        if (input == "q")
         {
             break;
         }
@@ -93,6 +95,10 @@ void BlockSetup()
         }
 		out.close();
     }
+	else
+	{
+		blocked_for = "";
+	}
 }
 
 map<string, vector<string>> RunSetup()
@@ -208,6 +214,25 @@ map<string, vector<string>> RunSetup()
 //HRESULT RunScript(string username, map<string, vector<string>> activities)
 map<string, vector<string>> RunScript(string username, map<string, vector<string>> activities)
 {
+	if (blocked_for == "")
+	{
+		ifstream in;
+		in.open("C:/Windows/System32/drivers/etc/hosts", ios::app);
+		ofstream out;
+		out.open("C:/Windows/System32/drivers/etc/temp", ios::app);
+		string line;
+		while (getline(in, line))
+		{
+			if (line.substr(0, 9) != "127.0.0.1")
+			{
+				out << line << endl;
+			}
+		}
+		out.close();
+		in.close();
+		remove("C:/Windows/System32/drivers/etc/hosts");
+		rename("C:/Windows/System32/drivers/etc/temp", "C:/Windows/System32/drivers/etc/hosts");
+	}
     // Declare variables.
     HRESULT hr;
     WINBIO_SESSION_HANDLE sessionHandle = NULL;
@@ -369,6 +394,7 @@ map<string, vector<string>> RunScript(string username, map<string, vector<string
                         }
                         break;
                     case WINBIO_ANSI_381_POS_RH_THUMB:
+						blocked_for = username;
                         BlockSetup();
                         break;
                     case WINBIO_ANSI_381_POS_LH_THUMB:
@@ -389,22 +415,6 @@ map<string, vector<string>> RunScript(string username, map<string, vector<string
             break;
         case S_OK:
             printf("\n Fast user switch initiated.\n");
-			ifstream in;
-			in.open("C:/Windows/System32/drivers/etc/hosts", ios::app);
-			ofstream out;
-			out.open("C:/Windows/System32/drivers/etc/temp", ios::app);
-			string line;
-			while (getline(in, line))
-			{
-				if (line.substr(0, 9) != "127.0.0.1")
-				{
-					out << line << endl;
-				}
-			}
-			out.close();
-			in.close();
-			remove("C:/Windows/System32/drivers/etc/hosts");
-			rename("C:/Windows/System32/drivers/etc/temp", "C:/Windows/System32/drivers/etc/hosts");
             break;
         default:
             wprintf_s(L"\n WinBioLogonIdentifiedUser failed. hr = 0x%x\n", hr);
