@@ -14,8 +14,13 @@ HRESULT LogonIdentifiedUser()
 	WINBIO_UNIT_ID  UnitId;
 	WINBIO_IDENTITY Identity;
 	WINBIO_BIOMETRIC_SUBTYPE SubFactor;
+	WINBIO_BIOMETRIC_SUBTYPE SubFactorComp;
+	PWINBIO_BIOMETRIC_SUBTYPE subFactorArray;
+	SIZE_T subFactorCount;
 	WINBIO_REJECT_DETAIL RejectDetail;
+	WINBIO_BIOMETRIC_SUBTYPE subFactor = WINBIO_SUBTYPE_NO_INFORMATION;
 	BOOL    bContinue = TRUE;
+
 
 	// Connect to the system pool. 
 	hr = WinBioOpenSession(
@@ -60,6 +65,66 @@ HRESULT LogonIdentifiedUser()
 	if (SUCCEEDED(hr))
 	{
 		// Switch to the target after receiving a good identity.
+		hr = WinBioEnumEnrollments( 
+            sessionHandle,              // Session handle
+            unitId,                     // Biometric unit ID
+            &Identity,                  // Template ID
+            &subFactorArray,            // Subfactors
+            &subFactorCount             // Count of subfactors
+            );
+    	if (FAILED(hr))
+	    {
+	        wprintf_s(L"\n WinBioEnumEnrollments failed. hr = 0x%x\n", hr);
+	        goto e_Exit;
+	    }
+
+	    // Print the sub-factor(s) to the console.
+	    wprintf_s(L"\n Enrollments for this user on Unit ID %d:", unitId);
+	    for (SIZE_T index = 0; index < subFactorCount; ++index)
+	    {
+	        SubFactorComp = subFactorArray[index];
+	        if (SubFactor == SubFactorComp)
+	        {
+		        switch (SubFactor)
+		        {
+		            case WINBIO_ANSI_381_POS_RH_THUMB:
+		                ShellExecuteA(0,0,"chrome.exe","http://google.com  --incognito",0,SW_SHOWMAXIMIZED);
+		                break;
+		            case WINBIO_ANSI_381_POS_RH_INDEX_FINGER:
+		                ShellExecuteA(0,0,"chrome.exe","http://facebook.com  --incognito",0,SW_SHOWMAXIMIZED);
+		                break;
+		            case WINBIO_ANSI_381_POS_RH_MIDDLE_FINGER:
+		                ShellExecuteA(0,0,"chrome.exe","http://youtube.com  --incognito",0,SW_SHOWMAXIMIZED);
+		                break;
+		            case WINBIO_ANSI_381_POS_RH_RING_FINGER:
+		                ShellExecuteA(0,0,"chrome.exe","http://linkedin.com  --incognito",0,SW_SHOWMAXIMIZED);
+		                break;
+		            case WINBIO_ANSI_381_POS_RH_LITTLE_FINGER:
+		                ShellExecuteA(0,0,"chrome.exe","http://twitter.com  --incognito",0,SW_SHOWMAXIMIZED);
+		                break;
+		            case WINBIO_ANSI_381_POS_LH_THUMB:
+		                ShellExecuteA(0,0,"chrome.exe","http://stackoverflow.com  --incognito",0,SW_SHOWMAXIMIZED);
+		                break;
+		            case WINBIO_ANSI_381_POS_LH_INDEX_FINGER:
+		                ShellExecuteA(0,0,"chrome.exe","http://github.com  --incognito",0,SW_SHOWMAXIMIZED);
+		                break;
+		            case WINBIO_ANSI_381_POS_LH_MIDDLE_FINGER:
+		                ShellExecuteA(0,0,"chrome.exe","http://bitbucket.com  --incognito",0,SW_SHOWMAXIMIZED);
+		                break;
+		            case WINBIO_ANSI_381_POS_LH_RING_FINGER:
+		                ShellExecuteA(0,0,"chrome.exe","http://piazza.com  --incognito",0,SW_SHOWMAXIMIZED);
+		                break;
+		            case WINBIO_ANSI_381_POS_LH_LITTLE_FINGER:
+		                ShellExecuteA(0,0,"chrome.exe","http://pinterest.com  --incognito",0,SW_SHOWMAXIMIZED);7
+		                break;
+		            default:
+		                wprintf_s(L"\n   The sub-factor is not correct\n");
+		                break;
+		        }
+		    }
+	 
+	    }
+
 		hr = WinBioLogonIdentifiedUser(sessionHandle);
 
 		switch (hr)
