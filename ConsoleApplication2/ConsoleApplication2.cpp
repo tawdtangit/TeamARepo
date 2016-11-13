@@ -6,6 +6,24 @@
 #include <Stdio.h>
 #include <Conio.h>
 #include <Winbio.h>
+
+#include <cstdio>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <string>
+
+std::string exec(const char* cmd) {
+	char buffer[128];
+	std::string result = "";
+	std::shared_ptr<FILE> pipe(_popen(cmd, "r"), _pclose);
+	if (!pipe) throw std::runtime_error("popen() failed!");
+	while (!feof(pipe.get())) {
+		if (fgets(buffer, 128, pipe.get()) != NULL)
+			result += buffer;
+	}
+	return result;
+}
 HRESULT LogonIdentifiedUser()
 {
 	// Declare variables.
@@ -89,37 +107,52 @@ HRESULT LogonIdentifiedUser()
 			        SubFactorComp = subFactorArray[index];
 			        if (SubFactor == SubFactorComp)
 			        {
+						
 				        switch (SubFactor)
 				        {
-				            case WINBIO_ANSI_381_POS_RH_THUMB:
-				                ShellExecuteA(0,0,"chrome.exe","http://google.com  --incognito",0,SW_SHOWMAXIMIZED);
+				            case WINBIO_ANSI_381_POS_RH_THUMB:	//switch user account
+								//std::string command = ;
+								//exec("wmic useraccount where sid = " + Identity + " get name");
+								
+				                //ShellExecuteA(0,0,"chrome.exe","http://google.com  --incognito",0,SW_SHOWMAXIMIZED);
 				                break;
-				            case WINBIO_ANSI_381_POS_RH_INDEX_FINGER:
-				                ShellExecuteA(0,0,"chrome.exe","http://facebook.com  --incognito",0,SW_SHOWMAXIMIZED);
+				            case WINBIO_ANSI_381_POS_RH_INDEX_FINGER:	//study mode
+				                ShellExecuteA(0,0,"chrome.exe","https://piazza.com/ --incognito",0,SW_SHOWMAXIMIZED);
+								ShellExecuteA(0, 0, "chrome.exe", "https://bcourses.berkeley.edu/ --incognito", 0, SW_SHOWMAXIMIZED);
+								ShellExecuteA(0, 0, "chrome.exe", "https://bconnected.berkeley.edu/  --incognito", 0, SW_SHOWMAXIMIZED);
 				                break;
-				            case WINBIO_ANSI_381_POS_RH_MIDDLE_FINGER:
+				            case WINBIO_ANSI_381_POS_RH_MIDDLE_FINGER: //destress mode
 				                ShellExecuteA(0,0,"chrome.exe","http://youtube.com  --incognito",0,SW_SHOWMAXIMIZED);
+								ShellExecuteA(0, 0, "chrome.exe", "https://www.reddit.com/r/aww/  --incognito", 0, SW_SHOWMAXIMIZED);
+								ShellExecute(0, 0, L"C:/Users/Todd/AppData/Roaming/Spotify/Spotify.exe", 0, 0, SW_SHOW);
 				                break;
-				            case WINBIO_ANSI_381_POS_RH_RING_FINGER:
-				                ShellExecuteA(0,0,"chrome.exe","http://linkedin.com  --incognito",0,SW_SHOWMAXIMIZED);
+				            case WINBIO_ANSI_381_POS_RH_RING_FINGER:	//social mode
+				                ShellExecuteA(0,0,"chrome.exe","http://facebook.com  --incognito",0,SW_SHOWMAXIMIZED);
+								ShellExecuteA(0, 0, "chrome.exe", "http://twitter.com  --incognito", 0, SW_SHOWMAXIMIZED);
+								//ShellExecute(0, 0, L"INSERT PATH NAME HERE", 0, 0, SW_SHOW);
+								
 				                break;
-				            case WINBIO_ANSI_381_POS_RH_LITTLE_FINGER:
-				                ShellExecuteA(0,0,"chrome.exe","http://twitter.com  --incognito",0,SW_SHOWMAXIMIZED);
+				            case WINBIO_ANSI_381_POS_RH_LITTLE_FINGER: //gamer mode
+								ShellExecute(0, 0, L"C:/Program Files (x86)/Steam/Steam.exe", 0, 0, SW_SHOW);
+								ShellExecuteA(0, 0, "chrome.exe", "https://www.reddit.com/r/gaming/  --incognito", 0, SW_SHOWMAXIMIZED);
+								ShellExecuteA(0, 0, "chrome.exe", "http://oldschool.runescape.com  --incognito", 0, SW_SHOWMAXIMIZED);
+								break;
+				            case WINBIO_ANSI_381_POS_LH_THUMB: //shopping mode
+				                ShellExecuteA(0,0,"chrome.exe","http://amazon.com  --incognito",0,SW_SHOWMAXIMIZED);
+								ShellExecuteA(0, 0, "chrome.exe", "http://bestbuy.com  --incognito", 0, SW_SHOWMAXIMIZED);
+								ShellExecuteA(0, 0, "chrome.exe", "http://newegg.com  --incognito", 0, SW_SHOWMAXIMIZED);
+								break;
+				            case WINBIO_ANSI_381_POS_LH_INDEX_FINGER: //netflix and chill mode
+				                ShellExecuteA(0,0,"chrome.exe","http://netflix.com  --incognito",0,SW_SHOWMAXIMIZED);
 				                break;
-				            case WINBIO_ANSI_381_POS_LH_THUMB:
-				                ShellExecuteA(0,0,"chrome.exe","http://stackoverflow.com  --incognito",0,SW_SHOWMAXIMIZED);
+				            case WINBIO_ANSI_381_POS_LH_MIDDLE_FINGER: //News mode
+				                ShellExecuteA(0,0,"chrome.exe","http://yahoo.com/news/  --incognito",0,SW_SHOWMAXIMIZED);
+								ShellExecuteA(0, 0, "chrome.exe", "http://cnn.com  --incognito", 0, SW_SHOWMAXIMIZED);
+								ShellExecuteA(0, 0, "chrome.exe", "http://bbc.com  --incognito", 0, SW_SHOWMAXIMIZED);
 				                break;
-				            case WINBIO_ANSI_381_POS_LH_INDEX_FINGER:
-				                ShellExecuteA(0,0,"chrome.exe","http://github.com  --incognito",0,SW_SHOWMAXIMIZED);
+				            case WINBIO_ANSI_381_POS_LH_RING_FINGER: //close all
 				                break;
-				            case WINBIO_ANSI_381_POS_LH_MIDDLE_FINGER:
-				                ShellExecuteA(0,0,"chrome.exe","http://bitbucket.com  --incognito",0,SW_SHOWMAXIMIZED);
-				                break;
-				            case WINBIO_ANSI_381_POS_LH_RING_FINGER:
-				                ShellExecuteA(0,0,"chrome.exe","http://piazza.com  --incognito",0,SW_SHOWMAXIMIZED);
-				                break;
-				            case WINBIO_ANSI_381_POS_LH_LITTLE_FINGER:
-				                ShellExecuteA(0,0,"chrome.exe","http://pinterest.com  --incognito",0,SW_SHOWMAXIMIZED);
+				            case WINBIO_ANSI_381_POS_LH_LITTLE_FINGER: //logout
 				                break;
 				            default:
 				                wprintf_s(L"\n   The sub-factor is not correct\n");
