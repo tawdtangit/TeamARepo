@@ -1,0 +1,7 @@
+﻿  stdafx.cpp
+  ConsoleApplication2.cpp
+ConsoleApplication2.obj : error LNK2019: unresolved external symbol WinBioOpenSession referenced in function "long __cdecl LogonIdentifiedUser(void)" (?LogonIdentifiedUser@@YAJXZ)
+ConsoleApplication2.obj : error LNK2019: unresolved external symbol WinBioCloseSession referenced in function "long __cdecl LogonIdentifiedUser(void)" (?LogonIdentifiedUser@@YAJXZ)
+ConsoleApplication2.obj : error LNK2019: unresolved external symbol WinBioIdentify referenced in function "long __cdecl LogonIdentifiedUser(void)" (?LogonIdentifiedUser@@YAJXZ)
+ConsoleApplication2.obj : error LNK2019: unresolved external symbol WinBioLogonIdentifiedUser referenced in function "long __cdecl LogonIdentifiedUser(void)" (?LogonIdentifiedUser@@YAJXZ)
+C:\Users\admin\Documents\TeamA\TeamARepo\x64\Debug\ConsoleApplication2.exe : fatal error LNK1120: 4 unresolved externals
